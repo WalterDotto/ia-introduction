@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Red neuronal con TensorFlowJS</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400,700" rel="stylesheet">
+    <style>
+        @media screen and (max-width: 600px) {
+            #sitio {
+                font-size: 2rem;
+                padding: 0.5rem;
+            }
+
+            .container {
+                height: 180vh;
+            }
+        }
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: #1c1c1c;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        @media screen and (min-width: 600px) {
+
+            #sitio {
+                font-size: 4rem;
+                padding: 1rem;
+            }
+
+            .container {
+                height: 110vh;
+            }
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #sitio {
+            background-color: #5DA2A4;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(255, 64, 129, 0.5);
+        }
+
+        input {
+            display: block;
+            margin-top: 1rem;
+            padding: 10px;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid #ff4081;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            outline: none;
+        }
+
+        input:hover, input:focus {
+            border-bottom: 2px solid #fff;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-top: 2rem;
+            max-width: 800px;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="sitio">
+        Red neuronal con TensorFlowJS
+    </div>
+    <input data-jscolor="{value:'#5DA2A4'}" , onInput="update(this.jscolor)">
+
+    <p>
+        Este código implementa una red neuronal en JavaScript utilizando la biblioteca TensorFlow.js. La red neuronal se utiliza para predecir el color del texto en función del color de fondo en una página web. La página web contiene un título "Neural Network with TensorFlowJs" en una caja con sombra y un campo de entrada para seleccionar el color de fondo. La caja de texto y el texto dentro de la caja se actualizan dinámicamente en función del color de fondo seleccionado. El código crea y entrena una red neuronal utilizando TensorFlow.js para realizar la predicción de color del texto y actualiza la página web dinámicamente. Además, se utiliza la biblioteca jscolor.min.js para crear un selector de color que se puede utilizar para seleccionar el color de fondo de la página.
+    </p>
+
+
+</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.5/jscolor.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+<script type="text/javascript">
+
+    // Neural network definition
+    const model = tf.sequential({
+                                    layers: [
+                                        tf.layers.dense({inputShape: [3], units: 4, activation: 'relu'}),
+                                        tf.layers.dense({units: 1, activation: 'sigmoid'})
+                                    ]
+                                });
+
+    // Compiling neural network
+    model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+
+    // Set input (xs) and output (ys) variables.
+    const xs = tf.tensor2d([
+                               [0, 0, 0],
+                               [1, 1, 1],
+                               [0, 1, 0],
+                               [0, 0.43, 1],
+                               [1, 0, 0]
+                           ]);
+    const ys = tf.tensor2d([[1], [0], [0], [1], [1]]);
+
+    //Training the neural network
+    model.fit(xs, ys, {epochs: 1000}).then(info => {
+        console.log('Training results: ', info);
+    });
+
+    function update(color) {
+        // Color object to tensor object
+        const inputTensor = tf.tensor2d([[color.channels.r / 255, color.channels.g / 255, color.channels.b / 255]]);
+
+        // Predict text color
+        const prediction = model.predict(inputTensor);
+        const predictionValue = prediction.dataSync()[0];
+
+        console.log('For input: ' + inputTensor + ', this predictionValue: ', predictionValue);
+
+        // update text color on the screen
+        const div = document.getElementById("sitio");
+        div.style.background = color.toHEXString();
+        if (predictionValue > 0.5) {
+            div.style.color = "white";
+        } else {
+            div.style.color = "black";
+        }
+    }
+</script>
+</body>
+</html>
