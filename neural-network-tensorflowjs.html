@@ -83,7 +83,7 @@
 
 <div class="container">
     <div id="sitio">
-        Red neuronal con TensorFlowJS
+        Cargando modelo...
     </div>
     <input data-jscolor="{value:'#5DA2A4'}" , onInput="update(this.jscolor)">
 
@@ -123,6 +123,9 @@
     //Training the neural network
     model.fit(xs, ys, {epochs: 1000}).then(info => {
         console.log('Training results: ', info);
+        const div = document.getElementById("sitio");
+        div.textContent = "Red neuronal con TensorFlowJS"
+        R
     });
 
     function update(color) {
